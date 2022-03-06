@@ -1,0 +1,5 @@
+.bg-info-50,
+.bg-info-50 td {
+  background-color: rgba(13, 110, 253, 0.15) !important;
+  box-shadow: none;
+}
