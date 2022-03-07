@@ -212,16 +212,10 @@ export const getShootPosition = (shoots: number) => {
     return res;
 }
 
-export const createBattle = async (address: string, enemyTeam: number, sessionId: string, shipIds: number[], team3N: boolean = false, team1R: boolean = false, reset: boolean = false): Promise<Reward> => {
-    let shoot_position = shipIds.length === 3 ? getShootPosition(9) : shipIds.length === 1 ? getShootPosition(2) : getShootPosition(4);
+export const createBattle = async (address: string, enemyTeam: number, sessionId: string, shipIds: number[], shoots: number, reset: boolean = false): Promise<Reward> => {
+    let shoot_position = getShootPosition(shoots);
     if (reset) {
         shoot_position = getShootPosition(10);
-    }
-    if (team1R) {
-        shoot_position = getShootPosition(3);
-    }
-    if (team3N) {
-        shoot_position = getShootPosition(6);
     }
     let ship_position = shipIds.length === 3 ? [{ r: 0, c: 0 }, { r: 4, c: 0 }, { r: 4, c: 4 }] : shipIds.length === 1 ? getShootPosition(1) : [{ r: 0, c: 1 }, { r: 4, c: 1 }]
     try {
