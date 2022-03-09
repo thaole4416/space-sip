@@ -1,11 +1,6 @@
-import { add, isEmpty, isEqual, round, slice, subtract, trim } from "lodash";
-import moment from "moment";
+import { add, isEmpty, isEqual, round, slice, subtract } from "lodash";
 import React, { useEffect, useState } from "react";
 import {
-  CLAIM_WALLET_ALPACA,
-  CLAIM_WALLET_POSI,
-  CLAIM_WALLET_SPACE_1,
-  CLAIM_WALLET_SPACE_2,
   SQUAD_SHIPS,
   WALLET_ALPACA,
   WALLET_POSI,
@@ -151,6 +146,9 @@ function App() {
     const ships = await bulkShip(address);
     const sortedShips: ViewShip[] = ships.spaceships
       .sort(sortByRarity)
+      .filter((item: Ship) =>
+        SQUAD_SHIPS[address].flatMap((x) => x).includes(item.ship_id)
+      )
       .map(mapShipProperties);
     setShips(sortedShips);
     const energy = await getUsedEnergy(address);
