@@ -1,4 +1,4 @@
-import { add, isEmpty, isEqual, round, slice, subtract } from "lodash";
+import { add, isEmpty, isEqual, minBy, round, slice, subtract } from "lodash";
 import React, { useEffect, useState } from "react";
 import {
   SQUAD_SHIPS,
@@ -14,7 +14,6 @@ import {
   createBattle,
   createEnemies,
   getBalance,
-  getElement,
   getUsedEnergy,
   mapShipProperties,
   rechargeEnergy,
@@ -24,7 +23,6 @@ import {
 } from "./services";
 
 function App() {
-  const [enemies, setEnemies] = useState([]);
   const [address, setAddress] = useState(WALLET_POSI);
   const [sessionId, setSessionId] = useState("");
   const [shipIds, setShipIds] = useState<number[] | []>([]);
@@ -33,6 +31,7 @@ function App() {
   const [usedEnergy, setUsedEnergy] = useState(0);
   const [balance, setBalance] = useState(0);
   const [teamHp, setTeamHp] = useState(0);
+  const [bestEnemy, setBestEnemy] = useState({ id: -1, hp: 9999 });
   const onSelectShipForSquad = (id: number) => () => {
     if ((shipIds as number[]).includes(id)) {
       setShipIds([...shipIds.filter((x) => x !== id)]);
@@ -89,7 +88,8 @@ function App() {
       hp: enemy.fight_hp,
       spaceships: enemy.spaceships,
     }));
-    setEnemies(viewEnemies);
+    const _bestChoice = minBy(viewEnemies, (o: any) => o.hp);
+    setBestEnemy(_bestChoice);
     setSessionId(id);
     const isContinueReset =
       viewEnemies.reduce(
@@ -111,7 +111,7 @@ function App() {
         shoots,
         isReset
       );
-      setEnemies([]);
+      setBestEnemy({ id: -1, hp: 9999 });
       if (!isReset) {
         await onInit();
       }
@@ -128,7 +128,6 @@ function App() {
   ): Promise<any> => {
     if (fight) {
       await createBattle(address, enemyTeam, id, shipIds, shoots, isReset);
-      setEnemies([]);
     }
     let [continueReset, _id] = await onCreateEnemies();
     if (continueReset) {
@@ -177,7 +176,6 @@ function App() {
             setAddress(WALLET_POSI);
             setShipIds([]);
             setShips([]);
-            setEnemies([]);
             setBalance(0);
           }}
         >
@@ -199,7 +197,6 @@ function App() {
             setAddress(WALLET_ALPACA);
             setShipIds([]);
             setShips([]);
-            setEnemies([]);
             setBalance(0);
           }}
         >
@@ -221,7 +218,6 @@ function App() {
             setAddress(WALLET_SPACE_1);
             setShipIds([]);
             setShips([]);
-            setEnemies([]);
             setBalance(0);
           }}
         >
@@ -243,7 +239,6 @@ function App() {
             setAddress(WALLET_SPACE_2);
             setShipIds([]);
             setShips([]);
-            setEnemies([]);
             setBalance(0);
           }}
         >
@@ -266,7 +261,6 @@ function App() {
             setAddress(WALLET_SPACE_3);
             setShipIds([]);
             setShips([]);
-            setEnemies([]);
             setBalance(0);
           }}
         >
@@ -278,7 +272,7 @@ function App() {
     </ul>
   );
   const generalInfo = (
-    <h4>
+    <p>
       <span>
         Used Energy: {usedEnergy}{" "}
         {usedEnergy === 30 && (
@@ -293,7 +287,7 @@ function App() {
         &nbsp;&nbsp;&nbsp;
       </span>
       <span>Unclaim: {balance}</span>
-    </h4>
+    </p>
   );
   const renderElement = (elem: string) => {
     let className = "";
@@ -406,66 +400,21 @@ function App() {
         Start
       </button>
       <button
+        className={`btn btn-sm ${
+          bestEnemy?.hp < teamHp ? "btn-primary" : "btn-danger"
+        } mb-4 ms-3`}
+        onClick={onFight(bestEnemy?.id, bestEnemy?.hp < teamHp ? false : true)}
+        disabled={bestEnemy?.id === -1}
+      >
+        {bestEnemy?.hp < teamHp ? ">" : "c"}
+      </button>
+      <button
         className="btn btn-sm btn-danger mb-4 ms-3"
         onClick={onClearSquad}
         disabled={isEmpty(shipIds)}
       >
         Clear
       </button>
-      <h4>Enemy:</h4>
-      <table className="table table-light table-sm table-striped table-hover table-bordered">
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Fight Hp</th>
-            <th>&nbsp;&nbsp;&nbsp;</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {enemies &&
-            enemies.map((enemy: any) => (
-              <tr key={enemy.id}>
-                <td>{enemy.id}</td>
-                <td
-                  className={
-                    enemy.hp <= teamHp - 4
-                      ? "text-success"
-                      : enemy.hp <= teamHp
-                      ? "text-warning"
-                      : "text-danger"
-                  }
-                >
-                  {enemy.hp}
-                </td>
-                <td align="center" valign="middle">
-                  {enemy.spaceships.map((ship: Ship) => (
-                    <React.Fragment key={ship.ship_id}>
-                      {renderElement(getElement(ship.element))}
-                      &nbsp;&nbsp;
-                    </React.Fragment>
-                  ))}
-                </td>
-                <td>
-                  <button
-                    className="btn btn-primary btn-sm me-3"
-                    type="button"
-                    onClick={onFight(enemy.id)}
-                  >
-                    <img src="/fight.svg" alt="" />
-                  </button>
-                  <button
-                    className="btn btn-primary btn-sm"
-                    type="button"
-                    onClick={onFight(enemy.id, true)}
-                  >
-                    <img src="/reset.svg" alt="" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
     </>
   );
 
@@ -478,7 +427,7 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address]);
   return (
-    <div className="App">
+    <div className="App" style={{ width: "380px" }}>
       {generalInfo}
       <div className="row">
         <div className="col">
