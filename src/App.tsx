@@ -21,6 +21,7 @@ import {
   sortByRarity,
   ViewShip,
 } from "./services";
+import x from "../tsconfig.json";
 
 function App() {
   const [address, setAddress] = useState(WALLET_POSI);
@@ -364,7 +365,7 @@ function App() {
       <table className="table table-light table-sm table-striped table-hover table-bordered">
         <thead>
           <tr>
-            <th>Squad</th>
+            <th>Team</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -379,42 +380,53 @@ function App() {
               >
                 <td>{squad.join(", ")}</td>
                 <td>
-                  <button
-                    className="btn btn-primary btn-sm"
-                    type="button"
-                    onClick={onSelectSquad(squad)}
-                  >
-                    Select Squad
-                  </button>
+                  <div className="btn-group" role="group">
+                    <button
+                      className="btn btn-outline-primary btn-sm"
+                      type="button"
+                      onClick={onSelectSquad(squad)}
+                    >
+                      v
+                    </button>
+                    {isEqual(shipIds, squad.map(Number)) ? (
+                      <>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          type="button"
+                          disabled={isEmpty(shipIds)}
+                          onClick={onCreateEnemies}
+                        >
+                          Start
+                        </button>
+                        <button
+                          className={`btn btn-sm ${
+                            bestEnemy?.hp < teamHp
+                              ? "btn-primary"
+                              : "btn-danger"
+                          }`}
+                          onClick={onFight(
+                            bestEnemy?.id,
+                            bestEnemy?.hp < teamHp ? false : true
+                          )}
+                          disabled={bestEnemy?.id === -1}
+                        >
+                          {bestEnemy?.hp < teamHp ? ">" : "c"}
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={onClearSquad}
+                          disabled={isEmpty(shipIds)}
+                        >
+                          Clear
+                        </button>
+                      </>
+                    ) : null}
+                  </div>
                 </td>
               </tr>
             ))}
         </tbody>
       </table>
-      <button
-        className="btn btn-primary btn-sm mb-4"
-        type="button"
-        disabled={isEmpty(shipIds)}
-        onClick={onCreateEnemies}
-      >
-        Start
-      </button>
-      <button
-        className={`btn btn-sm ${
-          bestEnemy?.hp < teamHp ? "btn-primary" : "btn-danger"
-        } mb-4 ms-3`}
-        onClick={onFight(bestEnemy?.id, bestEnemy?.hp < teamHp ? false : true)}
-        disabled={bestEnemy?.id === -1}
-      >
-        {bestEnemy?.hp < teamHp ? ">" : "c"}
-      </button>
-      <button
-        className="btn btn-sm btn-danger mb-4 ms-3"
-        onClick={onClearSquad}
-        disabled={isEmpty(shipIds)}
-      >
-        Clear
-      </button>
     </>
   );
 
