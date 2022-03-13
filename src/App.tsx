@@ -381,13 +381,6 @@ function App() {
                 <td>{squad.join(", ")}</td>
                 <td>
                   <div className="btn-group" role="group">
-                    <button
-                      className="btn btn-outline-primary btn-sm"
-                      type="button"
-                      onClick={onSelectSquad(squad)}
-                    >
-                      v
-                    </button>
                     {isEqual(shipIds, squad.map(Number)) ? (
                       <>
                         <button
@@ -420,7 +413,15 @@ function App() {
                           Clear
                         </button>
                       </>
-                    ) : null}
+                    ) : (
+                      <button
+                        className="btn btn-outline-primary btn-sm"
+                        type="button"
+                        onClick={onSelectSquad(squad)}
+                      >
+                        v
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>
