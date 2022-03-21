@@ -17,7 +17,10 @@ export interface Ship {
     rarity: number;
     name: string;
     hp: number;
+    fusion_bonus_hp: number;
     attack: number;
+    fusion_bonus_attack: number;
+    fusion: number;
     fuel: number;
     is_genesis: boolean;
     element: number;
@@ -46,6 +49,7 @@ export interface ViewShip {
     age: number,
     rarity: string,
     element: string
+    fusion: number
 }
 
 export interface Reward {
@@ -64,12 +68,13 @@ export const sortByRarity = (shipA: Ship, shipB: Ship): number => shipB.rarity -
 export const mapShipProperties = (ship: Ship) => ({
     id: ship.ship_id,
     name: ship.name,
-    hp: round(ship.hp, 2),
-    attack: round(ship.attack, 2),
+    hp: round(ship.hp, 2) + round(ship.fusion_bonus_hp, 2),
+    attack: round(ship.attack, 2) + round(ship.fusion_bonus_attack, 2),
     fuel: round(ship.fuel, 2),
     age: getAge(ship.birthday_reset.seconds),
     rarity: getRarity(ship.rarity),
-    element: getElement(ship.element)
+    element: getElement(ship.element),
+    fusion: ship.fusion,
 });
 export const getElement = (element: number) => {
     return Object.keys(ELEMENT)[element];

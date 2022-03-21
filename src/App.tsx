@@ -117,13 +117,14 @@ function App() {
         await onInit();
       }
       if (isReset) {
-        await loopReset(enemyTeam, sessionId, isReset, false);
+        await loopReset(enemyTeam, sessionId, 0, isReset, false);
       }
     };
 
   const loopReset = async (
     enemyTeam: number,
     id: string,
+    count: number = 0,
     isReset: boolean = false,
     fight: boolean = true
   ): Promise<any> => {
@@ -131,14 +132,14 @@ function App() {
       await createBattle(address, enemyTeam, id, shipIds, shoots, isReset);
     }
     let [continueReset, _id] = await onCreateEnemies();
-    if (continueReset) {
+    if (continueReset && count < 5) {
       return new Promise(() => {
-        setTimeout(() => loopReset(enemyTeam, _id, isReset), 2000);
+        setTimeout(() => loopReset(enemyTeam, _id, count + 1, isReset), 1200);
       });
     } else {
       console.log("reset done");
       setSessionId(_id);
-      return;
+      return _id;
     }
   };
 
@@ -318,6 +319,7 @@ function App() {
             <th>Hp</th>
             <th>Attack</th>
             <th>Fuel</th>
+            <th>Fusion</th>
             <th>Age</th>
             <th>Rarity</th>
           </tr>
@@ -338,7 +340,7 @@ function App() {
                 {renderElement(ship.element)}
               </td>
               <td>{ship.hp}</td>
-              <td>{ship.attack}</td>
+              <td>{round(ship.attack, 2)}</td>
               <td
                 className={
                   ship.fuel < 5 ? "text-danger fw-bold" : "text-success"
@@ -346,6 +348,7 @@ function App() {
               >
                 {ship.fuel}
               </td>
+              <td>{ship.fusion}</td>
               <td
                 className={
                   ship.age >= 35 ? "text-warning fw-bold" : "text-success"
@@ -403,7 +406,18 @@ function App() {
                           )}
                           disabled={bestEnemy?.id === -1}
                         >
-                          {bestEnemy?.hp < teamHp ? ">" : "c"}
+                          &nbsp;{bestEnemy?.hp < teamHp ? ">" : "c"}&nbsp;
+                        </button>
+                        <button
+                          className={`btn btn-sm ${
+                            bestEnemy?.hp < teamHp
+                              ? "btn-primary"
+                              : "btn-danger"
+                          }`}
+                          onClick={onFight(bestEnemy?.id)}
+                          disabled={bestEnemy?.id === -1}
+                        >
+                          &nbsp;{">>"}&nbsp;
                         </button>
                         <button
                           className="btn btn-sm btn-danger"
@@ -419,7 +433,7 @@ function App() {
                         type="button"
                         onClick={onSelectSquad(squad)}
                       >
-                        v
+                        &nbsp;v&nbsp;
                       </button>
                     )}
                   </div>
