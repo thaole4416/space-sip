@@ -24,6 +24,7 @@ export interface Ship {
     fuel: number;
     is_genesis: boolean;
     element: number;
+    level: string;
 }
 
 const RARITY = {
@@ -49,7 +50,8 @@ export interface ViewShip {
     age: number,
     rarity: string,
     element: string
-    fusion: number
+    fusion: number;
+    level: string;
 }
 
 export interface Reward {
@@ -75,6 +77,7 @@ export const mapShipProperties = (ship: Ship) => ({
     rarity: getRarity(ship.rarity),
     element: getElement(ship.element),
     fusion: ship.fusion,
+    level: ship.level
 });
 export const getElement = (element: number) => {
     return Object.keys(ELEMENT)[element];

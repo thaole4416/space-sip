@@ -316,6 +316,7 @@ function App() {
           <tr>
             <th>Id</th>
             <th>&nbsp;&nbsp;&nbsp;</th>
+            <th>Lv</th>
             <th>Hp</th>
             <th>Attack</th>
             <th>Fuel</th>
@@ -339,6 +340,7 @@ function App() {
               <td align="center" valign="middle">
                 {renderElement(ship.element)}
               </td>
+              <td>{ship.level}</td>
               <td>{ship.hp}</td>
               <td>{round(ship.attack, 2)}</td>
               <td
