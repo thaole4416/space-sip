@@ -223,7 +223,7 @@ export const getShootPosition = (shoots: number) => {
 export const createBattle = async (address: string, enemyTeam: number, sessionId: string, shipIds: number[], shoots: number, reset: boolean = false): Promise<Reward> => {
     let shoot_position = getShootPosition(shoots);
     if (reset) {
-        shoot_position = getShootPosition(10);
+        shoot_position = getShootPosition(15);
     }
     let ship_position = shipIds.length === 3 ? [{ r: 0, c: 0 }, { r: 4, c: 0 }, { r: 4, c: 4 }] : shipIds.length === 1 ? getShootPosition(1) : [{ r: 0, c: 1 }, { r: 4, c: 1 }]
     try {

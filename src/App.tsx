@@ -41,7 +41,11 @@ function App() {
       )!;
       let totalHp = teamHp - hp;
       if (id === 132) totalHp -= 0.25;
-      setShoots((s) => subtract(s, rarity === "R" ? 3 : 2));
+      setShoots((s) => {
+        let _shoots = rarity === "R" ? 3 : 2;
+        if ([78029, 103502, 104510].includes(id)) _shoots = _shoots - 1;
+        return subtract(s, _shoots);
+      });
       setTeamHp(round(totalHp, 2));
     } else {
       (shipIds as number[]).push(id);
@@ -50,7 +54,11 @@ function App() {
       )!;
       let totalHp = teamHp + hp;
       if (id === 132) totalHp += 0.25;
-      setShoots((s) => add(s, rarity === "R" ? 3 : 2));
+      setShoots((s) => {
+        let _shoots = rarity === "R" ? 3 : 2;
+        if ([78029, 103502, 104510].includes(id)) _shoots = _shoots + 1;
+        return add(s, _shoots);
+      });
       setTeamHp(round(totalHp, 2));
       setShipIds([...shipIds]);
     }
@@ -63,8 +71,12 @@ function App() {
   const onSelectSquad = (squad: string[]) => () => {
     let [totalHp, totalShoots] = (ships as ViewShip[]).reduce(
       (prev: number[], cur: ViewShip) => {
-        if (squad.includes(cur.id))
-          return [prev[0] + cur.hp, add(prev[1], cur.rarity === "R" ? 3 : 2)];
+        if (squad.includes(cur.id)) {
+          let _shoots = cur.rarity === "R" ? 3 : 2;
+          if (["78029", "103502", "104510"].includes(cur.id))
+            _shoots = _shoots + 1;
+          return [prev[0] + cur.hp, add(prev[1], _shoots)];
+        }
         return prev;
       },
       [0, 0]
@@ -311,6 +323,7 @@ function App() {
   };
   const baseStation = (
     <>
+      {teamHp}
       <table className="table table-light table-sm table-striped table-hover table-bordered">
         <thead>
           <tr>
