@@ -6,7 +6,6 @@ import {
   WALLET_POSI,
   WALLET_SPACE_1,
   WALLET_SPACE_2,
-  WALLET_SPACE_3,
 } from "./data";
 import "./style.css";
 import {
@@ -260,28 +259,6 @@ function App() {
         </span>
 
         {slice(WALLET_SPACE_2, -4)}
-      </li>
-      <li
-        className={
-          address === WALLET_SPACE_3
-            ? "bg-info-50 list-group-item"
-            : "list-group-item"
-        }
-      >
-        <span
-          className="text-primary"
-          style={{ cursor: "pointer" }}
-          onClick={() => {
-            setAddress(WALLET_SPACE_3);
-            setShipIds([]);
-            setShips([]);
-            setBalance(0);
-          }}
-        >
-          Select&nbsp;&nbsp;&nbsp;
-        </span>
-
-        {slice(WALLET_SPACE_3, -4)}
       </li>
     </ul>
   );
